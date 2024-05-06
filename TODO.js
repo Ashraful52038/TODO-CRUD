@@ -4,7 +4,7 @@ let mysqlConnection=mysql.createConnection({
     host:'localhost',
     user:'root',
     password:'',
-    database:'college'
+    database:'ToDo_app'
 });
 
 mysqlConnection.connect((err)=>{
