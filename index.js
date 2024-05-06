@@ -1,4 +1,4 @@
-const TODO = require("./TODO");
+const connection= require("./connection");
 const express = require("express");
 const bodyParser = require("body-parser");
 const { removeAllListeners } = require("nodemon");
@@ -8,50 +8,44 @@ var app = express();
 app.use(bodyParser.json());
 
 // insert Data through post method
+app.post("/todo", (req, res) => {
+    connection.query(
+        "INSERT INTO UserTable (user_id, username, email, password) VALUES (?, ?, ?, ?)",
+        [req.body.user_id, req.body.username, req.body.email, req.body.password],
+        (err, rows) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send("Error posting data");
+            } else {
+                console.log("Data inserted");
+                res.send(rows);
+            }
+        }
+    );    
+    
+});
 
-app.post("/college", (req, res) => {
- 
 
-    console.log(req.body); 
-   
-     TODO.query(
-       "INSERT INTO alumni (Name,Roll,Email) values(?,?,?)",
-       [req.body.name, req.body.roll, req.body.email],
-       (err, rows) => {
-         if (err) {
-           console.log(err);
-         
-               }
-              
-           else {
-           res.send(rows);
-           console.log("Data inserted");
-         }
-       }
-     );
-   });
-   
-   
-   
-   // get data using get method
-   
-   app.get("/college/:id", (req, res) => {
-       TODO.query(
-         "SELECT * From alumni",
-         [req.params.id],
+// get data using get method
+
+app.get("/todo/:id", (req, res) => {
+    connection.query(
+        "SELECT * From UserTable",
+        [req.params.id],
          (err, rows) => {
            if (err) {
              console.log(err);
+             res.status(500).send("Error while getting the data");
            } else {
              res.send(rows);
-          
+             res.status(200).send("Successfully get the data");
            }
        });
    });
    
-   //Delete data through Delete method
-    app.delete("/college/:id",(req,res)=>{
-       TODO.query(
+//Delete data through Delete method
+app.delete("/TODO/:id",(req,res)=>{
+    connection.query(
            "DELETE FROM alumni WHERE id = ?",
            [req.params.id], //pass the object and id separately
            (err,rows)=>{
@@ -73,8 +67,8 @@ app.post("/college", (req, res) => {
    });
    
    //Update data through patch method
-   app.patch("/college/:id", (req, res) => {
-       TODO.query(
+   app.patch("/TODO/:id", (req, res) => {
+       connection.query(
            "UPDATE alumni SET ? WHERE id = ?",
            [req.body,req.params.id], // Pass the object and the id separately
            (err, rows) => {
@@ -90,8 +84,8 @@ app.post("/college", (req, res) => {
    });
    
    //update and insert data from put method
-   app.put("/college/:id", (req, res) => {
-       TODO.query(
+   app.put("/TODO/:id", (req, res) => {
+       connection.query(
            "UPDATE alumni SET ? WHERE id = ?",
            [req.body, req.params.id],
            (err, result) => {
